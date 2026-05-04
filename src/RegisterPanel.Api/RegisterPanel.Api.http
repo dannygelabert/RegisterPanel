@@ -1,0 +1,78 @@
+@RegisterPanel.Api_HostAddress = http://localhost:5006
+
+GET {{RegisterPanel.Api_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
+
+### BE-013 — Registro de usuario (Client)
+POST {{RegisterPanel.Api_HostAddress}}/api/v1/auth/register
+Content-Type: application/json
+
+{
+  "firstName": "Ana",
+  "lastName": "García",
+  "email": "ana.garcia@example.com",
+  "password": "Password1",
+  "phoneNumber": "+34 612 345 678"
+}
+
+###
+
+### BE-013 — Error 409: email ya registrado
+POST {{RegisterPanel.Api_HostAddress}}/api/v1/auth/register
+Content-Type: application/json
+
+{
+  "firstName": "Ana",
+  "lastName": "García",
+  "email": "ana.garcia@example.com",
+  "password": "Password1",
+  "phoneNumber": null
+}
+
+###
+
+### BE-014 — Login exitoso
+POST {{RegisterPanel.Api_HostAddress}}/api/v1/auth/login
+Content-Type: application/json
+
+{
+  "email": "ana.garcia@example.com",
+  "password": "Password1"
+}
+
+###
+
+### BE-014 — Error 401: contraseña incorrecta
+POST {{RegisterPanel.Api_HostAddress}}/api/v1/auth/login
+Content-Type: application/json
+
+{
+  "email": "ana.garcia@example.com",
+  "password": "WrongPassword1"
+}
+
+###
+
+### BE-014 — Error 401: usuario inexistente (mismo mensaje que contraseña incorrecta)
+POST {{RegisterPanel.Api_HostAddress}}/api/v1/auth/login
+Content-Type: application/json
+
+{
+  "email": "noexiste@example.com",
+  "password": "Password1"
+}
+
+###
+
+### BE-014 — Error 400: validación (campos vacíos)
+POST {{RegisterPanel.Api_HostAddress}}/api/v1/auth/login
+Content-Type: application/json
+
+{
+  "email": "",
+  "password": ""
+}
+
+###

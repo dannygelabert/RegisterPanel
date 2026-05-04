@@ -1,0 +1,34 @@
+# Build outputs
+bin/
+obj/
+
+# User-specific files
+*.user
+*.suo
+.vs/
+.vscode/
+
+# NuGet
+*.nupkg
+packages/
+project.lock.json
+project.fragment.lock.json
+
+# EF Core migrations snapshots de usuario — conservamos los del repo
+# (no ignoramos Migrations/)
+
+# Environment / secrets
+appsettings.Production.json
+*.env
+.env
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+logs/
+*.log
+
+# Docker volumes (solo local)
+postgres_data/
