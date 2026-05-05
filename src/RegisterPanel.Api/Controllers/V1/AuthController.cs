@@ -46,7 +46,7 @@ public sealed class AuthController : BaseApiController
         _mediator = mediator;
     }
 
-    /// <summary>Registra un nuevo usuario como Client.</summary>
+    /// <summary>Registers a new user with the Client role.</summary>
     [HttpPost("register")]
     [ProducesResponseType(typeof(RegisterResponse), StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -70,7 +70,7 @@ public sealed class AuthController : BaseApiController
         return Created(string.Empty, result.Value);
     }
 
-    /// <summary>Inicia sesión y devuelve un JWT Bearer token.</summary>
+    /// <summary>Authenticates a user and returns a JWT Bearer token.</summary>
     [HttpPost("login")]
     [ProducesResponseType(typeof(LoginResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -87,7 +87,7 @@ public sealed class AuthController : BaseApiController
         return ToActionResult(result);
     }
 
-    /// <summary>Verifica el email del usuario con el token enviado por correo.</summary>
+    /// <summary>Verifies the user's email address using the token sent via email.</summary>
     [HttpGet("verify-email")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -104,7 +104,7 @@ public sealed class AuthController : BaseApiController
         return Ok(new { message = "Email verificado correctamente. Ya puedes iniciar sesión." });
     }
 
-    /// <summary>Inicia el flujo de recuperación de contraseña. Siempre devuelve 200.</summary>
+    /// <summary>Initiates the password recovery flow. Always returns 200 on a valid request.</summary>
     [HttpPost("forgot-password")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -112,13 +112,15 @@ public sealed class AuthController : BaseApiController
         [FromBody] ForgotPasswordRequest request,
         CancellationToken ct)
     {
-        // ValidationPipelineBehavior throws on invalid input (caught by GlobalExceptionMiddleware → 400)
-        // On valid input the handler always succeeds, so we discard the result
-        await _mediator.Send(new ForgotPasswordCommand(request.Email), ct);
+        Result result = await _mediator.Send(new ForgotPasswordCommand(request.Email), ct);
+
+        if (!result.IsSuccess)
+            return ToActionResult(result);
+
         return Ok(new { message = "Si el email existe en nuestra plataforma, recibirás un email con instrucciones." });
     }
 
-    /// <summary>Aplica la nueva contraseña usando el token de recuperación.</summary>
+    /// <summary>Resets the user's password using the recovery token.</summary>
     [HttpPost("reset-password")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -139,7 +141,7 @@ public sealed class AuthController : BaseApiController
         return Ok(new { message = "Contraseña actualizada correctamente." });
     }
 
-    /// <summary>Reenvía el email de verificación. Siempre devuelve 200.</summary>
+    /// <summary>Resends the verification email. Always returns 200 on a valid request.</summary>
     [HttpPost("resend-verification")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -147,9 +149,11 @@ public sealed class AuthController : BaseApiController
         [FromBody] ResendVerificationRequest request,
         CancellationToken ct)
     {
-        // ValidationPipelineBehavior throws on invalid input (caught by GlobalExceptionMiddleware → 400)
-        // On valid input the handler always succeeds, so we discard the result
-        await _mediator.Send(new ResendVerificationCommand(request.Email), ct);
+        Result result = await _mediator.Send(new ResendVerificationCommand(request.Email), ct);
+
+        if (!result.IsSuccess)
+            return ToActionResult(result);
+
         return Ok(new { message = "Si el email existe y no está verificado, recibirás un nuevo enlace." });
     }
 }

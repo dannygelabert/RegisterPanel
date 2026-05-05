@@ -27,7 +27,6 @@ public sealed class AdminSettingsRepository : IAdminSettingsRepository
 
     public Task UpdateAsync(AdminSettings settings, CancellationToken ct = default)
     {
-        // Entity is already tracked by the DbContext; SaveChanges is the caller's responsibility.
         _context.AdminSettings.Update(settings);
         return Task.CompletedTask;
     }

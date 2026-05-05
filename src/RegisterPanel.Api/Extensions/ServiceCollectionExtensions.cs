@@ -12,7 +12,6 @@ public static class ServiceCollectionExtensions
         services.AddControllers();
         services.AddProblemDetails();
 
-        // ── JWT Authentication ────────────────────────────────────────────────
         string jwtSecret = configuration["Jwt:Secret"]
             ?? throw new InvalidOperationException("Jwt:Secret is not configured.");
 
@@ -38,7 +37,6 @@ public static class ServiceCollectionExtensions
                 };
             });
 
-        // ── Authorization policies ────────────────────────────────────────────
         services.AddAuthorization(options =>
         {
             options.AddPolicy("AdminOnly",

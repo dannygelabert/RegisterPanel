@@ -44,7 +44,7 @@ public static class InfrastructureServiceExtensions
             options.Password.RequiredLength = 8;
             options.Password.RequireNonAlphanumeric = false;
             options.User.RequireUniqueEmail = true;
-            options.SignIn.RequireConfirmedEmail = false; // relaxed — verify later in BE-015
+            options.SignIn.RequireConfirmedEmail = false;
         })
         .AddEntityFrameworkStores<RegisterPanelDbContext>()
         .AddDefaultTokenProviders();

@@ -27,12 +27,10 @@ public sealed class RegisterCommandHandler : IRequestHandler<RegisterCommand, Re
 
     public async Task<Result<RegisterResponse>> Handle(RegisterCommand command, CancellationToken ct)
     {
-        // 1. Verify email is not already in use
         ApplicationUser? existing = await _userManager.FindByEmailAsync(command.Email);
         if (existing is not null)
             return Result<RegisterResponse>.Failure("EMAIL_ALREADY_IN_USE", "El email ya está registrado");
 
-        // 2–3. Create user + role inside a retriable transaction
         ApplicationUser? createdUser = null;
 
         Result<RegisterResponse> txResult = await _unitOfWork.ExecuteInTransactionAsync<RegisterResponse>(
@@ -77,7 +75,6 @@ public sealed class RegisterCommandHandler : IRequestHandler<RegisterCommand, Re
         if (!txResult.IsSuccess)
             return txResult;
 
-        // 4. Generate and send email verification token (outside transaction)
         string token = await _userManager.GenerateEmailConfirmationTokenAsync(createdUser!);
         string encodedToken = Uri.EscapeDataString(token);
         await _emailService.SendEmailVerificationAsync(createdUser!.Email!, createdUser!.Id.ToString(), encodedToken);

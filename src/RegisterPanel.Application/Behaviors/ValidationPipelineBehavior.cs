@@ -44,21 +44,14 @@ public sealed class ValidationPipelineBehavior<TRequest, TResponse>
 
     private static TResponse CreateFailureResult(string errorMessage)
     {
-        Type responseType = typeof(TResponse);
-
-        if (responseType == typeof(Result))
+        if (typeof(TResponse) == typeof(Result))
             return (TResponse)(object)Result.Failure("VALIDATION_ERROR", errorMessage);
 
-        MethodInfo? failureMethod = responseType.GetMethod(
-            "Failure",
-            BindingFlags.Public | BindingFlags.Static,
-            null,
-            new Type[] { typeof(string), typeof(string) },
-            null);
+        Type valueType = typeof(TResponse).GetGenericArguments()[0];
+        MethodInfo failure = typeof(Result<>)
+            .MakeGenericType(valueType)
+            .GetMethod("Failure", [typeof(string), typeof(string)])!;
 
-        if (failureMethod is null)
-            return (TResponse)(object)Result.Failure("VALIDATION_ERROR", errorMessage);
-
-        return (TResponse)failureMethod.Invoke(null, new object[] { "VALIDATION_ERROR", errorMessage })!;
+        return (TResponse)failure.Invoke(null, ["VALIDATION_ERROR", errorMessage])!;
     }
 }

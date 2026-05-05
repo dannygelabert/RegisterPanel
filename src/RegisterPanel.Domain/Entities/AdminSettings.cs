@@ -4,7 +4,7 @@ namespace RegisterPanel.Domain.Entities;
 
 public class AdminSettings
 {
-    public int Id { get; private set; } // always 1 — singleton row
+    public int Id { get; private set; }
 
     public int MaxSimultaneousTrainers { get; private set; }
 

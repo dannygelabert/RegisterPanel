@@ -20,28 +20,21 @@ public sealed class LoginCommandHandler : IRequestHandler<LoginCommand, Result<L
 
     public async Task<Result<LoginResponse>> Handle(LoginCommand command, CancellationToken ct)
     {
-        // 1. Buscar usuario por email
         ApplicationUser? user = await _userManager.FindByEmailAsync(command.Email);
         if (user is null)
             return Result<LoginResponse>.Failure("INVALID_CREDENTIALS", "Email o contraseña incorrectos");
 
-        // 2. Verificar que el email está confirmado
         if (!user.EmailConfirmed)
             return Result<LoginResponse>.Failure("EMAIL_NOT_VERIFIED", "Debes verificar tu email antes de hacer login");
 
-        // 3. Verificar que la cuenta está activa
         if (!user.IsActive)
             return Result<LoginResponse>.Failure("ACCOUNT_INACTIVE", "Tu cuenta ha sido desactivada");
 
-        // 4. Verificar contraseña
         bool passwordValid = await _userManager.CheckPasswordAsync(user, command.Password);
         if (!passwordValid)
             return Result<LoginResponse>.Failure("INVALID_CREDENTIALS", "Email o contraseña incorrectos");
 
-        // 5. Obtener roles
         IList<string> roles = await _userManager.GetRolesAsync(user);
-
-        // 6. Generar JWT
         (string token, DateTimeOffset expiresAt) = _jwtService.GenerateToken(user, roles);
 
         return Result<LoginResponse>.Success(new LoginResponse(

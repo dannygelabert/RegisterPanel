@@ -11,10 +11,8 @@ public class RegisterPanelDbContext : IdentityDbContext<ApplicationUser, Applica
 {
     public RegisterPanelDbContext(DbContextOptions<RegisterPanelDbContext> options) : base(options) { }
 
-    // ─── Configuration global ────────────────────────────────────────────────
     public DbSet<AdminSettings> AdminSettings => Set<AdminSettings>();
 
-    // ─── IUnitOfWork ──────────────────────────────────────────────────────────
     public Task<Application.Common.Result<TResult>> ExecuteInTransactionAsync<TResult>(
         Func<CancellationToken, Task<Application.Common.Result<TResult>>> operation,
         CancellationToken cancellationToken = default)
@@ -32,7 +30,8 @@ public class RegisterPanelDbContext : IdentityDbContext<ApplicationUser, Applica
         });
     }
 
-    protected override void OnModelCreating(ModelBuilder modelBuilder)    {
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
         base.OnModelCreating(modelBuilder); // required for Identity tables
 
         // IdentityDbContext hard-codes PascalCase table names that override UseSnakeCaseNamingConvention.

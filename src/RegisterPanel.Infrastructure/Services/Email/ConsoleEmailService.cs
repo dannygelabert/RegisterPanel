@@ -5,10 +5,8 @@ using Microsoft.Extensions.Logging;
 namespace RegisterPanel.Infrastructure.Services.Email;
 
 /// <summary>
-/// Development email service that logs verification and reset links to the console
+/// Development email service that writes verification and password reset links to the console
 /// instead of sending real emails.
-/// ⚠️ MANUAL STEP REQUIRED (production): replace this registration with a real
-/// SMTP or SendGrid implementation before deploying to production.
 /// </summary>
 public sealed class ConsoleEmailService : IEmailService
 {
